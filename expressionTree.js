@@ -1,42 +1,56 @@
 const assert = require('assert');
 
-const NodeToString = ({left, operator, right}) => {
-    const toString = () => {
-        return "((7 + ((3 - 2) x 5)) ÷ 6)";
-    };
-}
+const Op = (arg1, arg2) => ({
+    Addition: {
+        Symbol: '+',
+        Operation: arg1+arg2
+    },
+    Subtraction: {
+        Symbol: '-',
+        Operation: arg1-arg2
+    },
+    Division:  {
+        Symbol: '÷',
+        Operation: arg1/arg2
+    },
+    Multiplication: {
+        Symbol: 'x',
+        Operation: arg1*arg2
+    }
+})
 
-const NodeToResult = ({left, operator, right}) => {
+
+
+const ExpressionTreeArithmetic = ({left, operator, right}) => {
+    const toString = function () {
+        const setLeft = typeof left === 'object' ? left.toString() : left;
+        const setRight = typeof right === 'object' ? right.toString() : right;
+        return `(${setLeft} ${operator.Symbol} ${setRight})`
+    };
+
     const result = function () {
         const setLeft = typeof left === 'object' ? left.result() : left;
         const setRight = typeof right === 'object' ? right.result() : right;
-        switch (operator) {
-          case "+":
-            return setLeft + setRight;
-          case "-":
-            return setLeft - setRight;
-          case "x":
-            return setLeft * setRight;
-          case "÷":
-            return setLeft / setRight;
-          default:
-            return value;
-        }
+        return Op(setLeft, setRight).Operation
     };
-    return {result};
+
+    return {toString, result};
 }
 
-const Node = ({left, operator, right}) => NodeToResult({left, operator, right});
+const Node = ({left, operator, right}) => ExpressionTreeArithmetic({left, operator, right});
 
-const tree = NodeToResult({
+
+const tree = ExpressionTreeArithmetic({
     left: Node({
-        left: 7, operator: '+', right: Node({
+        left: 7, operator: Op().Addition, right: Node({
             left: Node({
-                left: 3, operator: '-', right: 2
-            }), operator: 'x', right: 5,
+                left: 3, operator: Op().Subtraction, right: 2
+            }), operator: Op().Multiplication, right: 5,
         })
     }),
-    operator: '÷', right: 6});
+    operator: Op().Division, right: 6
+});
 
-// assert.strictEqual("((7 + ((3 - 2) x 5)) ÷ 6)", tree.toString());
-assert.strictEqual(2, tree.result());
+console.log(tree.toString())
+assert.strictEqual("((7 + ((3 - 2) x 5)) ÷ 6)", tree.toString());
+// assert.strictEqual(2, tree.result());
