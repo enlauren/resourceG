@@ -28,8 +28,15 @@ const NodeToResult = ({left, operator, right}) => {
 
 const Node = ({left, operator, right}) => NodeToResult({left, operator, right});
 
-const tree = NodeToResult({left: Node({left: 1, operator: '+', right: 0}), operator: '+', right: 1});
-console.log(tree.result());
+const tree = NodeToResult({
+    left: Node({
+        left: 7, operator: '+', right: Node({
+            left: Node({
+                left: 3, operator: '-', right: 2
+            }), operator: 'x', right: 5,
+        })
+    }),
+    operator: '÷', right: 6});
 
 // assert.strictEqual("((7 + ((3 - 2) x 5)) ÷ 6)", tree.toString());
 assert.strictEqual(2, tree.result());
